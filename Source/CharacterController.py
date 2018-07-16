@@ -18,19 +18,24 @@
 # Space.
 ###############################################################################
 import bge
+from collections import OrderedDict
 from mathutils import Vector
 
 class CharacterController(bge.types.KX_PythonComponent):
-	args = {
-		"Walk Speed"            : 0.1,
-		"Run Speed"             : 0.2,
-		"Max Jumps"             : 1,
-		"Avoid Sliding"         : True,
-		"Static Jump Direction" : False,
-	}
+	args = OrderedDict([
+		("Activate"              , True),
+		("Walk Speed"            , 0.1),
+		("Run Speed"             , 0.2),
+		("Max Jumps"             , 1),
+		("Avoid Sliding"         , True),
+		("Static Jump Direction" , False),
+		("Make Object Invisible" , False),
+	])
 
 	# Start Function
 	def start(self, args):
+		self.active = args["Activate"]
+
 		self.walkSpeed = args["Walk Speed"]
 		self.runSpeed  = args["Run Speed"]
 
@@ -42,6 +47,10 @@ class CharacterController(bge.types.KX_PythonComponent):
 
 		self.character = bge.constraints.getCharacter(self.object)
 		self.character.maxJumps = args["Max Jumps"]
+
+		if self.active:
+			if args["Make Object Invisible"]:
+				self.object.visible = False
 
 	# Makes the character walk with W,A,S,D (You can run by holding Left Shift)
 	def characterMovement(self):
@@ -93,9 +102,10 @@ class CharacterController(bge.types.KX_PythonComponent):
 
 	# Update Function
 	def update(self):
-		self.characterMovement()
-		self.characterJump()
+		if self.active:
+			self.characterMovement()
+			self.characterJump()
 
-		if self.avoidSliding:
-			self.avoidSlide()
+			if self.avoidSliding:
+				self.avoidSlide()
 
