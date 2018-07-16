@@ -15,11 +15,11 @@
 # "Static Jump Direction". It means that, if the player wasn't moving when
 # he pressed Space, the character will jump up and the player will not be able
 # to change this during the jump. The same for when he was moving when pressed
-# Space.
+# Space. Same for the rotation (Static Jump Rotation).
 ###############################################################################
 import bge
 from collections import OrderedDict
-from mathutils import Vector
+from mathutils import Vector, Matrix
 
 class CharacterController(bge.types.KX_PythonComponent):
 	args = OrderedDict([
@@ -29,6 +29,7 @@ class CharacterController(bge.types.KX_PythonComponent):
 		("Max Jumps"             , 1),
 		("Avoid Sliding"         , True),
 		("Static Jump Direction" , False),
+		("Static Jump Rotation"  , False),
 		("Make Object Invisible" , False),
 	])
 
@@ -44,6 +45,9 @@ class CharacterController(bge.types.KX_PythonComponent):
 
 		self.staticJump = args["Static Jump Direction"]
 		self.__jumpDirection = [0,0,0]
+
+		self.staticJumpRot = args["Static Jump Rotation"]
+		self.__jumpRotation = Matrix.Identity(3)
 
 		self.character = bge.constraints.getCharacter(self.object)
 		self.character.maxJumps = args["Max Jumps"]
@@ -76,10 +80,14 @@ class CharacterController(bge.types.KX_PythonComponent):
 			vec *= speed
 
 		# This part is to make the static jump Direction works.
-		if not self.character.onGround and self.staticJump:
-			vec = self.__jumpDirection
-		elif self.character.onGround:
+		if not self.character.onGround:
+			if self.staticJump:
+				vec = self.__jumpDirection
+			if self.staticJumpRot:
+				self.object.worldOrientation = self.__jumpRotation.copy()
+		else:#elif self.character.onGround:
 			self.__jumpDirection = vec
+			self.__jumpRotation  = self.object.worldOrientation.copy()
 
 		self.character.walkDirection = self.object.worldOrientation * vec
 

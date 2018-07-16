@@ -49,7 +49,10 @@ class FirstPersonCamera(bge.types.KX_PythonComponent):
 		mDisp = mPos - wCenter
 		mDisp *= self.mouseSens
 
-		self.object.parent.applyRotation([0, 0, mDisp[0]*self.invertX], False)
+		obj = self.object.parent
+		if obj == None:
+			obj = self.object
+		obj.applyRotation([0, 0, mDisp[0]*self.invertX], False)
 		self.object.applyRotation([mDisp[1]*self.invertY, 0, 0], True)
 
 		bge.render.setMousePosition(int(wCenter[0]), int(wCenter[1]))
@@ -70,5 +73,6 @@ class FirstPersonCamera(bge.types.KX_PythonComponent):
 	def update(self):
 		if self.active:
 			self.mouselook()
+
 			if self.limitRot:
 				self.cameraLimits()
