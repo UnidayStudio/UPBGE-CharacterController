@@ -19,6 +19,7 @@ It's very simple to configure:
 - **Static Jump Direction**:  If you want to make your character jump in a static direction, activate "Static Jump Direction". It means that, if the player wasn't moving when he pressed Space, the character will jump up and the player will not be able to change this during the jump. The same for when he was moving when pressed Space. The jump direction will be the character direction when the player press space.
 - **Static Jump Rotation**: Exactly like the Jump Direction, but for the character rotation.
 - **Avoid Sliding**: If your character object have Collision Bounds activated, I'd recommend to enable the "Avoid Sliding" option. If so, the component will avoid the character from sliding on ramps.
+- **Smooth Character Movement**: You can make the movement gets more smooth by increasing this value (0.0 to 1.0).
 - **Make Object Invisible**: Makes the object invisible ingame (useful if you attach this component to a capsule object that have a armature inside).
 
 ## First Person Camera Component

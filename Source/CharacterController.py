@@ -21,6 +21,9 @@ import bge
 from collections import OrderedDict
 from mathutils import Vector, Matrix
 
+def clamp(x, a, b):
+	return min(max(a, x), b)
+
 class CharacterController(bge.types.KX_PythonComponent):
 	args = OrderedDict([
 		("Activate"              , True),
@@ -30,6 +33,7 @@ class CharacterController(bge.types.KX_PythonComponent):
 		("Avoid Sliding"         , True),
 		("Static Jump Direction" , False),
 		("Static Jump Rotation"  , False),
+		("Smooth Character Movement", 0.0),
 		("Make Object Invisible" , False),
 	])
 
@@ -42,6 +46,11 @@ class CharacterController(bge.types.KX_PythonComponent):
 
 		self.avoidSliding = args["Avoid Sliding"]
 		self.__lastPosition = self.object.worldPosition.copy()
+		self.__lastDirection = Vector([0,0,0])
+		self.__smoothSlidingFlag = False
+
+		self.__smoothMov  = clamp(args["Smooth Character Movement"], 0, 0.99)
+		self.__smoothLast = Vector([0,0,0])
 
 		self.staticJump = args["Static Jump Direction"]
 		self.__jumpDirection = [0,0,0]
@@ -72,7 +81,9 @@ class CharacterController(bge.types.KX_PythonComponent):
 		elif keyboard[bge.events.DKEY].values[-1]: x = 1
 
 		vec = Vector([x, y, 0])
+		self.__smoothSlidingFlag = False
 		if vec.length != 0:
+			self.__smoothSlidingFlag = True
 			# Normalizing the vector. For some reason, the mathutils normalize
 			# don't work very well.
 			vec /= vec.length
@@ -89,9 +100,19 @@ class CharacterController(bge.types.KX_PythonComponent):
 			self.__jumpDirection = vec
 			self.__jumpRotation  = self.object.worldOrientation.copy()
 
+
+
+		smooth = 1.0 - self.__smoothMov
+		vec = self.__smoothLast.lerp(vec, smooth)
+		self.__smoothLast = vec
+		test = self.object.worldPosition.copy()
 		self.character.walkDirection = self.object.worldOrientation * vec
 
+		#if self.__smoothLast.length <= 0.001 and not self.__smoothSlidingFlag:
+		#	self.__smoothLast = Vector([0,0,0])
+
 		if vec.length != 0:
+			self.__lastDirection = self.object.worldPosition - self.__lastPosition
 			self.__lastPosition = self.object.worldPosition.copy()
 
 	# Makes the Character jump with SPACE.
@@ -107,6 +128,13 @@ class CharacterController(bge.types.KX_PythonComponent):
 	def avoidSlide(self):
 		self.object.worldPosition[0] = self.__lastPosition[0]
 		self.object.worldPosition[1] = self.__lastPosition[1]
+
+		other = self.object.worldOrientation * self.__smoothLast
+
+		if self.__lastDirection.length != 0 and other.length != 0:
+			if self.__lastDirection.angle(other) > 0.5:
+				if not self.__smoothSlidingFlag:
+					self.__smoothLast = Vector([0,0,0])
 
 	# Update Function
 	def update(self):
