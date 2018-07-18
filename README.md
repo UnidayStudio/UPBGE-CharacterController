@@ -6,6 +6,9 @@ To use, just download the files, open it on UPBGE (version 0.2.3 recommended) an
 You can use this template in your projects, even for commercial projects. Just credit me for this.:)
 It's very easy to use in your projects: Just load this script into your .blend file (or paste them in the same folder that your .blend is), select the object that you want, and attach the script into the object's components.
 
+#### Note:
+This repository includes some **3D models**, **Animations** and **Textures** created by Guilherme Teres Nunes (me). Again: Don't forget to credit me if you use some of them as well.
+
 ## Character Controller Component
 This component will serve as a **Character Controller** for your game. With this, you can easly made an object move using W,A,S,D, run with LSHIFT and Jump with SPACE.
 
@@ -55,6 +58,13 @@ It's very simple to configure:
 
 By using this Component, you can also call some functions using python (from other components) to help you: setCameraAlign(type), setCameraPos(x,y,z), alignPlayerToView(), getCameraView(). Take a look at the implementation to see how these functions works.
 
+## Simple Animator Component
+This component will automatically align the armature to the move direction of your character, runs the right animations accordding to the speed and if the character is on air or not.
+
+To use, attach this component to the armature of your character. It's important that the armature is parented with an capsule object with physics type equals to Character.
+It's very simple to configure:
+- **Activate**: If you want this component running.
+- **TO DO**: TO DO!
 
 Created by **Guilherme Teres Nunes**
 
