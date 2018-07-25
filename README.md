@@ -2,12 +2,15 @@
 ###### For UPBGE 0.2.2+
 This templates was created to help Blender Game Engine (UPBGE) users to create games or any kind of interactive things that requests a Character Controller. Easy to use, easy to attach to your project.
 
+![](Doc/Images/Banner1.png)
+
 To use, just download the files, open it on UPBGE (version 0.2.3 recommended) and you're done!
 You can use this template in your projects, even for commercial projects. Just credit me for this.:)
 It's very easy to use in your projects: Just load this script into your .blend file (or paste them in the same folder that your .blend is), select the object that you want, and attach the script into the object's components.
 
 #### Note:
 This repository includes some **3D models**, **Animations** and **Textures** created by Guilherme Teres Nunes (me). Again: Don't forget to credit me if you use some of them as well.
+[Access my Sketchfab Here!](https://sketchfab.com/unidaystudio)
 
 ## Character Controller Component
 This component will serve as a **Character Controller** for your game. With this, you can easly made an object move using W,A,S,D, run with LSHIFT and Jump with SPACE.
@@ -64,7 +67,21 @@ This component will automatically align the armature to the move direction of yo
 To use, attach this component to the armature of your character. It's important that the armature is parented with an capsule object with physics type equals to Character.
 It's very simple to configure:
 - **Activate**: If you want this component running.
-- **TO DO**: TO DO!
+- **Max Walk Speed**: Define the max speed that you want while executing the walk animation. After this speed, the character will start interpolating the run animation. (Read the notes at the end).
+- **Max Run Speed**: Define the max speed that you want while executing the run animation. After this speed, the animation will not change.
+- **Suspend Children's Physic**: Enable this if you want to remove all the physics from the armature's childrens (recursive). Useful to avoid these childrens to collide with the player capsule, causing a physics bug.
+- **Align To Move Direction**: Enable this if you want to make you character faces the direction that the player is going.
+- **Align Smooth**: How smooth you want to align the character with the direction. 0 Means no smooth and 1 means max smooth.
+- **Idle Animation**: Define the name of the Idle (stopped) animation, the frame start and frame end.
+- **Walk Animation**: Define the name of the Walk animation, the frame start and frame end.
+- **Run Animation**: Define the name of the Run animation, the frame start and frame end.
+- **Jump Up Animation**: Define the name of the Jump Up animation, the frame start and frame end.
+- **Jump Down Animation**: Define the name of the Jump Down animation, the frame start and frame end.
+The **Jump** animations should be divided in two: Jump Up and Jump Down. The first one will be executed when the character is going up. The second, whe the character is falling. Both should be loop animations.
+
+**NOTE:** The anim interpolation/transition between idle-walk and walk-run according to the speed is not implemented yet.
+
+![](Doc/Images/Banner2.png)
 
 Created by **Guilherme Teres Nunes**
 

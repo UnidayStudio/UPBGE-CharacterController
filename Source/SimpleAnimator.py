@@ -26,7 +26,7 @@ class SimpleAnimator(bge.types.KX_PythonComponent):
 		("Activate"              , True),
 		("Max Walk Speed"        , 0.1),
 		("Max Run Speed"         , 0.2),
-		("Suspend Child Physics" , True),
+		("Suspend Children's Physics" , True),
 		("Align To Move Direction", True),
 		("Align Smooth"          , 0.5),
 
@@ -65,7 +65,7 @@ class SimpleAnimator(bge.types.KX_PythonComponent):
 		self.maxRunSpeed  = args["Max Run Speed"]
 
 		# Suspend physics:
-		if args["Suspend Child Physics"]:
+		if args["Suspend Children's Physics"]:
 			self.object.suspendPhysics()
 			for child in self.object.children:
 				child.suspendPhysics()
