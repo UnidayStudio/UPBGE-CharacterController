@@ -4,43 +4,44 @@
 #                      Created by: Guilherme Teres Nunes                      #
 #                       Access: youtube.com/UnidayStudio                      #
 #                               github.com/UnidayStudio                       #
-###############################################################################
-# Third Person Camera Component:
-# 	Add a camera in your scene, parent them into your character capsule (you
-# can use the Character controller Component on it), and attach this Component
-# to the camera. And you're done! The component will do the rest for you. :)
-#	You can configure the mouse sensibility, invert X or Y axis and
-# enable/disable the camera rotation limit.
-# 	Don't forget to configure, as well, the camera position (height, distance
-# and crab), if you want a camera collision (to prevent the camera from
-# traversing walls), and if you want to align the player to the Camera View.
+# 				github.com/UnidayStudio/UPBGE-CharacterController			  #
 ###############################################################################
 import bge
 from collections import OrderedDict
 from mathutils import Vector, Matrix
 
 class ThirdPersonCamera(bge.types.KX_PythonComponent):
+	""" Third Person Camera Component:
+	 	Add a camera in your scene, parent them into your character capsule (you
+	can use the Character controller Component on it), and attach this Component
+	to the camera. And you're done! The component will do the rest for you. :)
+		You can configure the mouse sensibility, invert X or Y axis and
+	enable/disable the camera rotation limit.
+		Don't forget to configure, as well, the camera position (height, distance
+	and crab), if you want a camera collision (to prevent the camera from
+	traversing walls), and if you want to align the player to the Camera View."""
+
 	args = OrderedDict([
-		("Activate"             , True),
-		("Mouse Sensibility"    , 2.0),
-		("Invert Mouse X Axis"  , False),
-		("Invert Mouse Y Axis"  , False),
-		("Camera Height"        , 0.7),
-		("Camera Distance"      , 5.0),
-		("Camera Crab (Side)"   , 0.6),
-		("Camera Collision"     , True),
+		("Activate", True),
+		("Mouse Sensibility", 2.0),
+		("Invert Mouse X Axis", False),
+		("Invert Mouse Y Axis", False),
+		("Camera Height", 0.7),
+		("Camera Distance", 5.0),
+		("Camera Crab (Side)", 0.6),
+		("Camera Collision", True),
 		("Camera Collision Property", "ground"),
-		("Align Player to View" , {"Never", "On Player Movement", "Always"}),
-		("Align Player Smooth"  , 0.5),
+		("Align Player to View", {"Never", "On Player Movement", "Always"}),
+		("Align Player Smooth", 0.5),
 	])
 
-	# Start Function
 	def start(self, args):
+		"""Start Function"""
 		self.active = args["Activate"]
 
 		self.mouseSens = args["Mouse Sensibility"] * (-0.001)
-		self.invertX   = [1, -1][args["Invert Mouse X Axis"]]
-		self.invertY   = [1, -1][args["Invert Mouse Y Axis"]]
+		self.invertX = [1, -1][args["Invert Mouse X Axis"]]
+		self.invertY = [1, -1][args["Invert Mouse Y Axis"]]
 
 		# Camera Position
 		self.__cameraPos = Vector([0,0,0])
@@ -48,7 +49,7 @@ class ThirdPersonCamera(bge.types.KX_PythonComponent):
 		                  -args["Camera Distance"],
 		                  args["Camera Height"])
 
-		self.cameraCol     = args["Camera Collision"]
+		self.cameraCol = args["Camera Collision"]
 		self.cameraColProp = args["Camera Collision Property"]
 
 		self.__camAlign = []
@@ -58,7 +59,8 @@ class ThirdPersonCamera(bge.types.KX_PythonComponent):
 		# To catch errors
 		self.__error = (self.object.parent == None)
 		if self.__error:
-			print("[Third Person Camera] Error: The camera must be parent to an object.")
+			print("[Third Person Camera] Error: The camera must be parent to an"
+				  " object.")
 
 		# Private Variables
 		self.__cameraPan  = Matrix.Identity(3) # Rotate around Z axis (global)
@@ -72,29 +74,29 @@ class ThirdPersonCamera(bge.types.KX_PythonComponent):
 
 ####-<PRIVATE FUNCTIONS>-######################################################
 
-	# Private function: Rotate on the Z axis (pan)
 	def __pan(self, angle):
+		"""Private function: Rotate on the Z axis (pan)"""
 		xyz = self.__cameraPan.to_euler()
 		xyz[2] += angle
 		self.__cameraPan = xyz.to_matrix()
 
-	# Private function: Rotate on the X axis (Tilt)
 	def __tilt(self, angle):
+		"""Private function: Rotate on the X axis (Tilt)"""
 		xyz = self.__cameraTilt.to_euler()
 		xyz[0] += angle
 		self.__cameraTilt = xyz.to_matrix()
 
-	# Private function: Gets the world camera position
-	# (based on the tilt and pan)
 	def __getWorldCameraPos(self):
+		"""Private function: Gets the world camera position (based on the tilt
+		and pan)"""
 		vec = self.__cameraPos.copy()
 		vec = self.__cameraTilt * vec
 		vec = self.__cameraPan * vec
 		return self.object.parent.worldPosition + vec
 
-	# Private function: Defines a rotation limit to the camera to avoid
-	# it from rotating too much (and gets upside down)
 	def __limitCameraRot(self):
+		"""Private function: Defines a rotation limit to the camera to avoid it
+		from rotating too much (and gets upside down)"""
 		xyz = self.__cameraTilt.to_euler()
 
 		if xyz[0] > 1.4:
@@ -104,8 +106,9 @@ class ThirdPersonCamera(bge.types.KX_PythonComponent):
 
 		self.__cameraTilt = xyz.to_matrix()
 
-	# Private function: Verifies if the player is moving
 	def __getPlayerMovementStatus(self):
+		"""Private function: Verifies if the player is moving"""
+
 		flag = False
 		vec = self.__playerPos - self.object.parent.worldPosition.copy()
 		if vec.length > 0.001:
@@ -114,8 +117,9 @@ class ThirdPersonCamera(bge.types.KX_PythonComponent):
 
 		return flag
 
-	# Private function: Applies the camera position
 	def __applyCameraPosition(self):
+		"""Private function: Applies the camera position"""
+
 		camPos = self.__getWorldCameraPos()
 
 		if self.cameraCol:
@@ -136,18 +140,20 @@ class ThirdPersonCamera(bge.types.KX_PythonComponent):
 
 ####-<PUBLIC FUNCTIONS>-#######################################################
 
-	# Public function to change the camera alignment.
 	def setCameraAlign(self, type):
+		"""Public function to change the camera alignment."""
+
 		self.__camAlign = {"Never": [0, 0],
 						   "On Player Movement": [0, 1],
 						   "Always": [1, 1]}[type]
 
-	# Public function to change the camera position.
 	def setCameraPos(self, x, y, z):
+		"""Public function to change the camera position."""
 		self.__cameraPos = Vector([x,y,z])
 
-	# Mouselook function: Makes the mouse look at where you move your mouse.
 	def mouselook(self):
+		"""Mouselook function: Makes the mouse look at where you move your
+		mouse."""
 		wSize = Vector([bge.render.getWindowWidth(),
 						bge.render.getWindowHeight()])
 
@@ -171,19 +177,18 @@ class ThirdPersonCamera(bge.types.KX_PythonComponent):
 
 		self.__limitCameraRot()
 
-
-	# Aligns the player to the Camera view
 	def alignPlayerToView(self):
+		"""Aligns the player to the Camera view"""
 		vec = self.getCameraView()
 		self.object.parent.alignAxisToVect(vec, 1, 1.0 - self.camAlignSmooth)
 		self.object.parent.alignAxisToVect([0,0,1], 2, 1)
 
-	# Returns the camera view direction
 	def getCameraView(self):
+		"""Returns the camera view direction"""
 		return self.__cameraPan * Vector([0,1,0])
 
-	# Update Function
 	def update(self):
+		"""Update Function"""
 		if self.active and not self.__error:
 			self.mouselook()
 
