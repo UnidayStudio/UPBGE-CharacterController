@@ -90,7 +90,7 @@ class SimpleAnimator(bge.types.KX_PythonComponent):
 
 		# TO DO: Interpolate between these animations according to the speed.
 		speed = self.__moveDirection.length
-		if speed == 0:#<= 0.001:
+		if speed <= 0.001:
 			self.__animate(self.__animIdle)
 		elif speed <= self.maxWalkSpeed+0.001:
 			self.__animate(self.__animWalk)
@@ -113,7 +113,7 @@ class SimpleAnimator(bge.types.KX_PythonComponent):
 		"""Align the armature to the move direction"""
 
 		length = self.__moveDirection.length
-		if length >= 0.01:
+		if length >= 0.:
 			# First checks if the move direction is the opposite of the current
 			# direction. If so, applies a small rotation just to avoid a weird
 			# delay that alignAxisToVect has in this case.
