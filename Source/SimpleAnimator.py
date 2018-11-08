@@ -90,7 +90,7 @@ class SimpleAnimator(bge.types.KX_PythonComponent):
 
 		# TO DO: Interpolate between these animations according to the speed.
 		speed = self.__moveDirection.length
-		if speed <= 0.001:
+		if speed <= 0.003:
 			self.__animate(self.__animIdle)
 		elif speed <= self.maxWalkSpeed+0.001:
 			self.__animate(self.__animWalk)
@@ -118,8 +118,11 @@ class SimpleAnimator(bge.types.KX_PythonComponent):
 			# direction. If so, applies a small rotation just to avoid a weird
 			# delay that alignAxisToVect has in this case.
 			vec = self.object.worldOrientation * Vector([0,1,0])
-			if vec.angle(self.__moveDirection) >= pi-0.01:
-				self.object.applyRotation([0,0,0.01], False)
+			try:
+				if vec.angle(self.__moveDirection) >= pi-0.01:
+					self.object.applyRotation([0,0,0.01], False)
+			except:
+				pass
 
 			length = clamp(length*20, 0, 1) * self.alignSmooth
 			self.object.alignAxisToVect(self.__moveDirection, 1, length)
